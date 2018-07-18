@@ -2,6 +2,9 @@ class BankAPI(object):
     accounts = dict()
 
     def post(self, account_name, password, init_deposit, first_name="N/A", last_name="N/A"):
+        """
+        POST
+        """
         # Case 1: exist same account name
         if account_name in self.accounts:
             print "Account name already exists, try a different one."
@@ -20,6 +23,9 @@ class BankAPI(object):
             return 0
 
     def get(self, account_name, password):
+        """
+        GET
+        """
         # Case 1 & 2: Account does not exist or Incorrect password
         if not self._validate_account(account_name, password):
             print "Incorrect account name or password. Please try again."
@@ -39,14 +45,20 @@ class BankAPI(object):
             return cur_bal
 
     def deposit(self, account_name, password, amount):
+        """
+        Deposit method
+        """
+        # Case 1: illegal amount to deposit (less than or equal to 0)
         if amount <= 0:
             print "The amount you are depositing must be larger than 0!"
             return -1
 
+        # Case 2: incorrect credentials
         if not self._validate_account(account_name, password):
             print "Incorrect account name or password. Please try again."
             return -1
 
+        # Case 3: Everything good
         balance = self.accounts[account_name].get_balance()
         self.accounts[account_name].deposit(amount)
         balance_new = self.accounts[account_name].get_balance()
@@ -58,14 +70,21 @@ class BankAPI(object):
         return balance_new
 
     def withdraw(self, account_name, password, amount):
+        """
+        Withdraw method
+        """
+        # Case 1: illegal amount to deposit (less than or equal to 0)
         if amount <= 0:
             print "The amount you are withdrawing must be larger than 0!"
             return -1
 
+        # Case 2: incorrect credentials
         if not self._validate_account(account_name, password):
             print "Incorrect account name or password. Please try again."
             return -1
 
+        # Case 3: Everything good
+        # Case 4: one additional situation considered in withdraw (withdrawal larger than current balance will be rejected)
         balance = self.accounts[account_name].get_balance()
         if not self.accounts[account_name].withdraw(amount):
             print "You cannot withdraw more money than your current balance!"
@@ -81,6 +100,9 @@ class BankAPI(object):
 
         
     def _validate_account(self, account_name, password):
+        """
+        instance method to verify credentials before any activity
+        """
         if account_name not in self.accounts or self.accounts[account_name].get_credentials() != password:
             return False
         return True
